@@ -2,6 +2,8 @@
 
 Show the octagon grid as an ingame overlay.
 
+![screenshot](https://cdn.discordapp.com/attachments/196043382278062081/220179034896728064/2016-08-30_04.51.37.png)
+
 ### Installation
 Grab a release from [the release page](https://github.com/Gjum/octaquila/releases/).
 Requires LiteLoader.
