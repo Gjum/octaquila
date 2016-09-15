@@ -6,8 +6,7 @@ Show the octagon grid as an ingame overlay.
 
 ### Installation
 Grab a release from [the release page](https://github.com/Gjum/octaquila/releases/).
-Requires LiteLoader.
-Probably will crash the game if forge is installed too.
+Requires LiteLoader, and is compatible with Forge.
 
 Default keybinds:
 - `o`: toggle on/off
