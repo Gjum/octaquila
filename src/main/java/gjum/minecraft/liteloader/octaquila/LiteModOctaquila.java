@@ -171,7 +171,7 @@ public class LiteModOctaquila implements PostRenderListener, Tickable {
     }
 
     int nearestOctoCenter(int coord, int center) {
-        int interval = 4 * edge;
+        int interval = 2 * edge; // centers of octagons and the squares inbetween
         int off = (coord - center - interval / 2) % interval;
         if (off < 0) off = interval + off;
         return coord - off + interval / 2;
