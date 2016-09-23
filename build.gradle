@@ -14,7 +14,7 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.liteloader'
 
-version = "0.1.1"
+version = "0.1.2"
 group = "gjum.minecraft.liteloader"
 archivesBaseName = "octaquila"
 
