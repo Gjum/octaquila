@@ -187,7 +187,7 @@ public class LiteModOctaquila implements PostRenderListener, Tickable {
 
         Octagon(int x, float y, int z) {
             this.x = x + .5f;
-            this.y = y + .5f;
+            this.y = y;
             this.z = z + .5f;
         }
 
