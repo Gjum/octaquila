@@ -29,6 +29,10 @@ public class LiteModOctaquila implements PostRenderListener, Tickable {
     int edge = 34;
 
     @Expose
+    @SerializedName("diagonalHeight")
+    int diagonalHeight = edge;
+
+    @Expose
     @SerializedName("centerX")
     int centerX = 775;
 
@@ -136,32 +140,58 @@ public class LiteModOctaquila implements PostRenderListener, Tickable {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         int oy = fixedHeight == -1 ? (int) py : fixedHeight;
+        int interval = (edge + diagonalHeight) * 2;
 
-        for (int ox = nearestOctoCenter((int) px - visibleRadius, centerX);
-             ox <= nearestOctoCenter((int) px + visibleRadius, centerX);
-             ox += edge * 4) {
-            for (int oz = nearestOctoCenter((int) pz - visibleRadius, centerZ);
-                 oz <= nearestOctoCenter((int) pz + visibleRadius, centerZ);
-                 oz += edge * 4) {
+        int west = nearestOctoCenter((int) px - visibleRadius, centerX);
+        int east = nearestOctoCenter((int) px + visibleRadius, centerX);
+        int north = nearestOctoCenter((int) pz - visibleRadius, centerZ);
+        int south = nearestOctoCenter((int) pz + visibleRadius, centerZ);
+
+        for (int ox = west; ox <= east; ox += interval) {
+            for (int oz = north; oz <= south; oz += interval) {
                 // centered
                 glColor3f(0, 1, 0);
                 new Octagon(ox, oy, oz).render();
                 // offset
                 glColor3f(0, 0, 1);
-                new Octagon(ox + 2 * edge, oy, oz + 2 * edge).render();
+                new Octagon(ox + edge + diagonalHeight, oy, oz + edge + diagonalHeight).render();
             }
         }
 
         // cross in nearest octo center
         glColor3f(1, 0, 0);
-        int ocx = nearestOctoCenter((int) px, centerX);
-        int ocz = nearestOctoCenter((int) pz, centerZ);
-        new Octagon(ocx, oy, ocz).render();
+        int cx = nearestOctoCenter((int) px, centerX);
+        int cz = nearestOctoCenter((int) pz, centerZ);
+        int cxo = nearestOctoCenter((int) px, centerX + edge + diagonalHeight);
+        int czo = nearestOctoCenter((int) pz, centerZ + edge + diagonalHeight);
+        boolean centeredOnOctagon = true;
+        if (Math.abs(px - cx) > Math.abs(px - cxo)) {
+            cx = cxo;
+            centeredOnOctagon = !centeredOnOctagon;
+        }
+        if (Math.abs(pz - cz) > Math.abs(pz - czo)) {
+            cz = czo;
+            centeredOnOctagon = !centeredOnOctagon;
+        }
+
+        if (centeredOnOctagon) {
+            new Octagon(cx, oy, cz).render();
+        } else { // centered on square
+            glBegin(GL_LINE_LOOP);
+            int r = edge / 2;
+            glVertex3f(cx + r + .5f, oy, cz + r + .5f);
+            glVertex3f(cx + r + .5f, oy, cz - r + .5f);
+            glVertex3f(cx - r + .5f, oy, cz - r + .5f);
+            glVertex3f(cx - r + .5f, oy, cz + r + .5f);
+            glEnd();
+        }
+
+        // mark center with cross
         glBegin(GL_LINES);
-        glVertex3f(ocx, oy, ocz);
-        glVertex3f(ocx + 1f, oy, ocz + 1f);
-        glVertex3f(ocx + 1f, oy, ocz);
-        glVertex3f(ocx, oy, ocz + 1f);
+        glVertex3f(cx, oy, cz);
+        glVertex3f(cx + 1f, oy, cz + 1f);
+        glVertex3f(cx + 1f, oy, cz);
+        glVertex3f(cx, oy, cz + 1f);
         glEnd();
 
         glDisable(GL_BLEND);
@@ -171,7 +201,7 @@ public class LiteModOctaquila implements PostRenderListener, Tickable {
     }
 
     int nearestOctoCenter(int coord, int center) {
-        int interval = 2 * edge; // centers of octagons and the squares inbetween
+        int interval = (edge + diagonalHeight) * 2;
         int off = (coord - center - interval / 2) % interval;
         if (off < 0) off = interval + off;
         return coord - off + interval / 2;
@@ -179,7 +209,7 @@ public class LiteModOctaquila implements PostRenderListener, Tickable {
 
     private class Octagon {
         final int ri = edge / 2;
-        final int ro = ri * 3;
+        final int ro = ri + diagonalHeight;
 
         final float x;
         final float y;
